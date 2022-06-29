@@ -98,7 +98,7 @@ import Vue from 'vue'
 export const bus = new Vue()
 ```
 
-step 2，需要通信的组件引入eventBus.js文件`import bus from './eventBus.js'`。
+step 2，需要通信的组件引入eventBus.js文件`import {bus} from './eventBus.js'`。
 
 step 3，发送方自定义事件，调用`bus.$emit('事件名称'，发送的数据)`。
 
