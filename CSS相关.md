@@ -336,9 +336,9 @@ margin允许负值，padding不允许负值。
 
 text-align 属性用于设置文本的水平对齐方式(left,center,right)。vertical-align 属性设置元素的垂直对齐方式(top,middle,bottom)。
 
-box-sizing:content-box
+box-sizing:content-box[标准盒模型-w3c盒模型]
 
-box-sizing:border-box
+box-sizing:border-box[IE盒模型-怪异盒模型]因为低版本IE中，元素盒子的box-sizing默认是border-box
 
-- `content-box` 是默认值。如果你设置一个元素的宽为100px，那么这个元素的内容区会有100px 宽，并且任何边框和内边距的宽度都会被增加到最后绘制出来的元素宽度中。
-- `border-box` 告诉浏览器：你想要设置的边框和内边距的值是包含在width内的。也就是说，如果你将一个元素的width设为100px，那么这100px会包含它的border和padding，内容区的实际宽度是width减去(border + padding)的值。大多数情况下，这使得我们更容易地设定一个元素的宽高。
+- `content-box` 是默认值。content-box中，属性width，height只包含内容content，不包含border和padding。内容（content）在CSS中其主要作用的属性是width和height。
+- `border-box` border-box中，属性width，height则包含content、border和padding。大多数情况下，这使得我们更容易地设定一个元素的宽高。
