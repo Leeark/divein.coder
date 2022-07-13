@@ -32,7 +32,13 @@
 ::pseudo-element-name
 ```
 
+区别：伪类和伪元素的区别，最关键的点在于如果没有伪元素(或伪类)，**是否需要添加元素才能达到目的**，如果是则是伪元素，反之则是伪类。
 
+
+
+# animation基本使用
+
+![image-20220713102715715](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220713102715715.png)
 
 # HTML5新特性
 
@@ -382,7 +388,22 @@ BFC（Block Formatting Context）块格式化上下文，是盒模型的一种�
 2. **外边距折叠**：解决同一BFC容器中的相邻元素间的外边距折叠问题
 3. **左图右文布局**：浮动盒的区域不会和 BFC 重叠
 
+# 盒模型
 
+box-sizing:content-box[标准盒模型-w3c盒模型]
+
+box-sizing:border-box[IE盒模型-怪异盒模型]因为低版本IE中，元素盒子的box-sizing默认是border-box
+
+- `content-box` 是默认值。content-box中，属性width，height只包含内容content，不包含border和padding。内容（content）在CSS中其主要作用的属性是width和height。
+- `border-box` border-box中，属性width，height则包含content、border和padding。大多数情况下，这使得我们更容易地设定一个元素的宽高。
+
+
+
+# box-shadow
+
+该属性可设置的值包括阴影的 X 轴偏移量、Y 轴偏移量、模糊半径、扩散半径和颜色。
+
+![image-20220713103201817](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220713103201817.png)
 
 # 其他
 
@@ -391,10 +412,3 @@ margin 属性设置为 auto，以使元素在其容器中水平居中。
 margin允许负值，padding不允许负值。
 
 text-align 属性用于设置文本的水平对齐方式(left,center,right)。vertical-align 属性设置元素的垂直对齐方式(top,middle,bottom)。
-
-box-sizing:content-box[标准盒模型-w3c盒模型]
-
-box-sizing:border-box[IE盒模型-怪异盒模型]因为低版本IE中，元素盒子的box-sizing默认是border-box
-
-- `content-box` 是默认值。content-box中，属性width，height只包含内容content，不包含border和padding。内容（content）在CSS中其主要作用的属性是width和height。
-- `border-box` border-box中，属性width，height则包含content、border和padding。大多数情况下，这使得我们更容易地设定一个元素的宽高。

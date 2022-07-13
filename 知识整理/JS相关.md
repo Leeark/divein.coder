@@ -1,3 +1,68 @@
+
+
+# 操作dom
+
+## 获取
+
+最常用的方法是`document.getElementById()`和`document.getElementsByTagName()`，以及CSS选择器`document.getElementsByClassName()`。
+
+由于ID在HTML文档中是唯一的，所以`document.getElementById()`可以直接定位唯一的一个DOM节点。`document.getElementsByTagName()`和`document.getElementsByClassName()`总是返回一组DOM节点。
+
+要精确地选择DOM，可以先定位父节点，再从父节点开始选择，以缩小范围。
+
+第二种方法是使用`querySelector()`和`querySelectorAll()`，需要了解selector语法，然后使用条件来获取节点，更加方便：
+
+Document.querySelector：方法返回文档中与指定选择器或选择器组匹配的第一个 [`Element`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element)对象。 如果找不到匹配项，则返回`null`。
+
+Document.querySelectorAll：返回与指定的选择器组匹配的文档中的元素列表 (使用深度优先的先序遍历文档的节点)。返回的对象是 [`NodeList`](https://developer.mozilla.org/zh-CN/docs/Web/API/NodeList) 。
+
+## 添加
+
+移动DOM节点也就是把这个节点插入到html文档中的某个地方，这里js给了我们两个方法：
+
+1.appendChild()：把节点插入到父节点的末尾。
+
+document.body.appendChild(oDiv);  //把div插入到body中，并且位于末尾
+
+2.insertBefore()：把节点插入到父节点的某个兄弟节点的前面。
+
+var oP = createElement('p'); //创建一个p节点
+document.body.insertBefore(oP,oDiv); //把p节点插入到div的前面
+
+## 删除
+
+删除DOM节点的方法是removeChild()。
+
+document.body.removeChild(oP); //删除p节点
+
+
+
+# 文档插入100节点，解决办法
+
+解决办法：创建文档片段Fragment，将标签全部放入该片段中，再统一插入document，这样只会渲染一次
+
+```javascript
+<ul id="root"></ul>
+<script>
+var root = document.getElementById('root')
+var fragment = document.createDocumentFragment()
+for(let i = 0; i < 1000; i++){
+	let li = document.createElement('li')
+	li.innerHTML = '我是li标签'
+    fragment.appendChild(li)
+}
+root.appendChild(fragment);
+</script>
+我们经常使用javascript来操作DOM元素，比如使用appendChild()方法。
+每次调用该方法时，浏览器都会重新渲染页面。如果大量的更新DOM节点，则会非常消耗性能，影响用户体验.
+javascript提供了一个文档碎片DocumentFragment的机制。
+如果将文档中的节点添加到文档片段中，就会从文档树中移除该节点。
+ 
+把所有要构造的节点都放在文档片段中执行，这样可以不影响文档树，也就不会造成页面渲染。
+当节点都构造完成后，再将文档片段对象添加到页面中，这时所有的节点都会一次性渲染出来，
+这样就能减少浏览器负担，提高页面渲染速度
+```
+
 # 作用域与作用域链
 
 - 作用域分为全局作用域和局部作用域。
