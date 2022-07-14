@@ -1,5 +1,179 @@
 
 
+# JS数据类型
+
+ECMAScript有6种简单数据类型（也称为原始类型）: Undefined、Null、Boolean、Number、String和Symbol。
+
+Symbol（符号）是ECMAScript 6新增的。
+
+还有一种复杂数据类型叫Object（对象）。
+
+# JS判断数据类型：
+
+https://www.cnblogs.com/onepixel/p/5126046.html
+
+## typeof操作符
+
+对一个值使用typeof操作符会返回下列字符串之一：
+
+❑ "string"表示值为字符串；❑ "number"表示值为数值；❑ "symbol"表示值为符号。
+
+❑ "object"表示值为对象（而不是函数）或null；❑ "function"表示值为函数；
+
+❑ "undefined"表示值未定义；❑ "boolean"表示值为布尔值；
+
+缺点：
+
+1,typeof null ; //'object'
+
+2,无法区分对象（除了函数）的具体类型
+
+3,new Boolean()；new Number()；new String()检测为'object'![image-20220714104045998](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220714104045998.png)
+
+## instanceof
+
+instanceof 是用来判断 A 是否为 B 的实例，表达式为：A instanceof B，如果 A 是 B 的实例，则返回 true,否则返回 false。 （检测构造函数的prototype是否出现在某个实例对象的原型链上）
+
+new出的实例同时是两个构造函数的实例![image-20220714104241794](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220714104241794.png)
+
+```js
+[] instanceof Array; // true
+{} instanceof Object;// true
+new Date() instanceof Date;// true
+ 
+function Person(){};
+new Person() instanceof Person;// true
+ 
+[] instanceof Object; // true
+new Date() instanceof Object;// true
+new Person instanceof Object;// true
+```
+
+因此，**instanceof 只能用来判断两个对象是否属于实例关系****， 而不能判断一个对象实例具体属于哪种类型。**
+
+## constructor
+
+当一个函数 F被定义时，JS引擎会为F添加 prototype 原型，然后再在 prototype上添加一个 constructor 属性，并让其指向 F 的引用。如下所示：
+
+![img](https://images2015.cnblogs.com/blog/849589/201705/849589-20170508125250566-1896556617.png)
+
+当执行 var f = new F() 时，F 被当成了构造函数，f 是F的实例对象，此时 F 原型上的 constructor 通过原型链传递到了 f 上，因此 f.constructor == F
+
+![img](https://images2015.cnblogs.com/blog/849589/201705/849589-20170508125714941-1649387639.png)
+
+## toString
+
+toString() 是 Object 的原型方法。可以通过 `toString()` 来获取每个对象的类型。为了每个对象都能通过 `Object.prototype.toString()` 来检测，需要以 `Function.prototype.call()` 或者 `Function.prototype.apply()` 的形式来调用，传递要检查的对象作为第一个参数，称为 `thisArg`。
+
+对于 Object 对象，直接调用 toString() 就能返回' [object Object] '。而对于其他对象，则需要通过 call / apply 来调用才能返回正确的类型信息。
+
+```js
+Object.prototype.toString.call('') ;   // [object String]
+Object.prototype.toString.call(1) ;    // [object Number]
+Object.prototype.toString.call(true) ; // [object Boolean]
+Object.prototype.toString.call(Symbol()); //[object Symbol]
+Object.prototype.toString.call(undefined) ; // [object Undefined]
+Object.prototype.toString.call(null) ; // [object Null]
+Object.prototype.toString.call(new Function()) ; // [object Function]
+Object.prototype.toString.call(new Date()) ; // [object Date]
+Object.prototype.toString.call([]) ; // [object Array]
+Object.prototype.toString.call(new RegExp()) ; // [object RegExp]
+Object.prototype.toString.call(new Error()) ; // [object Error]
+Object.prototype.toString.call(document) ; // [object HTMLDocument]
+Object.prototype.toString.call(window) ; //[object global] window 是全局对象 global 的引用
+```
+
+# Object 构造函数的方法
+
+## Object.create()
+
+**`Object.create()`** 方法用于创建一个新对象，使用现有的对象来作为新创建对象的原型（prototype）。
+
+```js
+const person = {
+  isHuman: false,
+  printIntroduction: function() {
+    console.log(`My name is ${this.name}. Am I human? ${this.isHuman}`);
+  }
+};
+
+const me = Object.create(person);
+
+me.name = 'Matthew'; // "name" is a property set on "me", but not on "person"
+me.isHuman = true; // inherited properties can be overwritten
+
+me.printIntroduction();
+// expected output: "My name is Matthew. Am I human? true"
+```
+
+## Object.is(a,b) 
+
+它用来比较两个值是否严格相等，与严格比较运算符（===）的行为基本一致。
+
+不同之处只有两个：一是 +0 不等于 -0 ，二是 NaN 等于自身。
+
+## Object.assign() 
+
+合并对象：将源对象（source）的所有**可枚举属性**，复制到目标对象（target）。
+
+Object.assign方法的第一个参数是目标对象，后面的参数都是源对象。
+
+**注意**：如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。
+
+```js
+const target = { a: 1, b: 1 };
+const source1 = { b: 2, c: 2 };
+const source2 = { c: 3 };
+
+Object.assign(target, source1, source2);
+console.log(target);    // {a:1, b:2, c:3}
+```
+
+## Object.getOwnPropertyDescriptor()
+
+**`Object.getOwnPropertyDescriptor()`** 方法返回指定对象上一个自有属性对应的属性描述符。（自有属性指的是直接赋予该对象的属性，不需要从原型链上进行查找的属性）
+
+```js
+const object1 = {
+  property1: 42
+};
+
+const descriptor1 = Object.getOwnPropertyDescriptor(object1, 'property1');
+
+console.log(descriptor1.configurable);
+// expected output: true
+
+console.log(descriptor1.value);
+// expected output: 42
+```
+
+## Object.getOwnPropertyDescriptors()
+
+ES5 的`Object.getOwnPropertyDescriptor()`方法会返回某个对象属性的描述对象（descriptor）。
+
+ES2017 引入了`Object.getOwnPropertyDescriptors()`方法，返回指定对象所有自身属性（非继承属性）的描述对象。
+
+```javascript
+const obj = {
+  foo: 123,
+  get bar() { return 'abc' }
+};
+
+Object.getOwnPropertyDescriptors(obj)
+// { foo:
+//    { value: 123,
+//      writable: true,
+//      enumerable: true,
+//      configurable: true },
+//   bar:
+//    { get: [Function: get bar],
+//      set: undefined,
+//      enumerable: true,
+//      configurable: true } }
+```
+
+上面代码中，`Object.getOwnPropertyDescriptors()`方法返回一个对象，所有原对象的属性名都是该对象的属性名，对应的属性值就是该属性的描述对象。
+
 # 操作dom
 
 ## 获取
@@ -35,7 +209,14 @@ document.body.insertBefore(oP,oDiv); //把p节点插入到div的前面
 
 document.body.removeChild(oP); //删除p节点
 
+## 替换
 
+替换DOM节点的方法是replaceChild()。
+
+var oSpan = document.createElement('span'); //创建一个span标签
+document.body.replaceChild(oSpan,oBox); //用span标签替换div标签
+
+![image-20220713105004111](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220713105004111.png)
 
 # 文档插入100节点，解决办法
 
