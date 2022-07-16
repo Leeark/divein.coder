@@ -178,3 +178,12 @@ Vue.use() 方法至少传入一个参数，该参数类型必须是 Object 或 F
 
 
 
+# Vue与React
+
+- React与Vue 都采用虚拟DOM
+- 核心功能都在核心库中，其他类似路由这样的功能则由其他库进行处理
+- React的生态系统更庞大，由ReactNative来进行混合App开发; Vue更轻量
+- React由独特的JSX语法; Vue是基于传统的Web计数进行扩展(HTML、CSS、JavaScript)，更容易学习
+
+
+

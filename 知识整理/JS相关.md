@@ -413,9 +413,73 @@ ES6 允许按照一定模式，从数组和对象中提取值，对变量进行�
 
 
 
-# promise
+# Promise
 
-# 
+Promise 是异步编程的一种解决方案，解决了回调地狱的问题。
+
+`Promise`构造函数接受一个函数作为参数，该函数的两个参数分别是`resolve`和`reject`。它们是两个函数，由 JavaScript 引擎提供，不用自己部署。
+
+`resolve`函数的作用是，将`Promise`对象的状态从“未完成”变为“成功”（即从 pending 变为 resolved），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；
+
+`reject`函数的作用是，将`Promise`对象的状态从“未完成”变为“失败”（即从 pending 变为 rejected），在异步操作失败时调用，并将异步操作报出的错误，作为参数传递出去。
+
+`Promise`实例生成以后，可以用`then`方法分别指定`resolved`状态和`rejected`状态的回调函数。
+
+# Generator
+
+## 1 什么是生成器
+
+generator（生成器）就是生成 （iterator）遍历器的函数。
+
+## 2 定义生成器
+
+```js
+function* 生成器名() {
+     yield 值;
+     yield 值;
+     yield 值;
+     yield 值;
+}
+```
+
+## 3 yield 关键字
+
+1）yeild 关键字返回一个值， 遍历的时候每次得到就是 yield 的值。
+
+2）调用 next()，执行到 yield 就会停止； 下一次调用 next()，执行到下一个 yield 停止。
+
+> 调用生成器函数的时候，函数内代码不会执行；当调用 next() 的时候，才开始执行生成器函数内的代码； 执行到 yield 停止。
+
+## 4 使用生成器函数给对象部署 iterator 接口
+
+```js
+let obj = {
+    name: '曹操',
+    age: 12,
+    sorce: 90,
+    height: 170
+};
+
+// 把obj变为一个 iterable
+// 部署iterator接口
+obj[Symbol.iterator] = function* (){
+    for (let i in obj) {
+        yield [i, obj[i]];
+    }
+};
+
+for (let i of obj) {
+    console.log(i);
+}
+```
+
+# async/await
+
+https://learn.fuming.site/front-end/Promise/async%E4%B8%8Eawait.html
+
+async 函数是什么？一句话，它就是 Generator 函数的语法糖。async 函数的实现原理，就是将 Generator 函数和自动执行器，包装在一个函数里。
+
+一比较就会发现，`async`函数就是将 Generator 函数的星号（`*`）替换成`async`，将`yield`替换成`await`，仅此而已。
 
 
 
@@ -441,15 +505,49 @@ new调用构造函数的过程：
 
 5；dom事件中的this指向dom标签
 
+# 深拷贝
 
+浅拷贝只复制指向某个对象的指针，而不复制对象本身，新旧对象共享堆内存。
 
-# [Vue组件通信方法](D:\我爱学习\我爱前端\我爱面试\知识点总结\知识整理\Vue中的组件通信.md)
+深拷贝开辟新的内存空间，新对象跟原对象不共享内存，数据独立。
 
+## JSON.parse(JSON.stringify(obj))
 
+缺点：
 
+会忽略 `undefined`和`symbol`；
 
+不可以对`Function`进行拷贝，因为`JSON`格式字符串不支持`Function`，在序列化的时候会自动删除；
 
+诸如 `Map`, `Set`, `RegExp`, `Date`, `ArrayBuffer `和其他内置类型在进行序列化时会丢失；
 
+不支持循环引用对象的拷贝;（循环引用的可以大概地理解为一个对象里面的某一个属性的值是它自己）
+
+## 递归
+
+```js
+function deepClone(target) {
+ // 如果是对象，且不是原始值null
+ if (typeof target === 'object' && target) { //注解一
+  // 创建容器
+  const result = Array.isArray(target) ? [] : {}; //注解三
+  const keys = Object.keys(target); //注解二
+ // Object.keys()会过滤掉原型链上的属性
+  keys.forEach(key => {
+   result[key] = deepClone(target[key]) // 注解三
+  })
+  return result;
+ }
+ // 如果是原始值，则直接返回
+ return target;
+}
+```
+
+- typeof null 返回的结果是 object，而众所周知 null 是一个基本类型，不是对象，所以我们判断是否为对象需要将它排除。
+- 这里我们没有使用 for...in 操作符来遍历对象，因为in操作符会查找原型链上的属性，使用 `Object.keys()`更能节约性能。
+- 我们提前判断了是否是对象或者数组，并创建了`result`容器。在之后，无论是数组还是对象，`result[key] = value`都能进行赋值。
+
+缺点：循环引用报错。
 
 # 模块化
 
