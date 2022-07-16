@@ -106,6 +106,18 @@ me.printIntroduction();
 // expected output: "My name is Matthew. Am I human? true"
 ```
 
+## Object.keys()
+
+ES5 引入了`Object.keys`方法，返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键名。
+
+## Object.values()
+
+ES2017引入，`Object.values`方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
+
+## Object.entries()
+
+ES2017引入，`Object.entries`方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值对数组。
+
 ## Object.is(a,b) 
 
 它用来比较两个值是否严格相等，与严格比较运算符（===）的行为基本一致。
@@ -129,6 +141,116 @@ Object.assign(target, source1, source2);
 console.log(target);    // {a:1, b:2, c:3}
 ```
 
+## Object.freeze()
+
+**`Object.freeze()`** 方法可以**冻结**一个对象。一个被冻结的对象再也不能被修改；冻结了一个对象则不能向这个对象添加新的属性，不能删除已有属性，不能修改该对象已有属性的可枚举性、可配置性、可写性，以及不能修改已有属性的值。此外，冻结一个对象后该对象的原型也不能被修改。`freeze()` 返回和传入的参数相同的对象。
+
+## Object.defineProperty()
+
+`Object.defineProperty()` 方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回此对象。语法：
+
+```reasonml
+Object.defineProperty(obj, prop, descriptor)
+```
+
+参数说明：
+
+> obj：必需。目标对象
+> prop：必需。需定义或修改的属性的名字
+> descriptor：必需。目标属性所拥有的特性
+
+返回值：
+
+> 传入函数的对象。即第一个参数obj
+
+给对象的属性添加特性描述，目前提供两种形式：数据描述和存取器描述。
+
+### 数据描述
+
+value: 设置属性的值
+writable: 值是否可以重写。true | false
+enumerable: 目标属性是否可以被枚举。true | false
+configurable: 目标属性是否可以被删除或是否可以再次修改特性（数据描述） true | false
+
+```js
+var obj = {
+    test:"hello"
+}
+//对象已有的属性添加特性描述
+Object.defineProperty(obj,"test",{
+    configurable:true | false,
+    enumerable:true | false,
+    value:任意类型的值,
+    writable:true | false
+});
+//对象新添加的属性的特性描述
+Object.defineProperty(obj,"newKey",{
+    configurable:true | false,
+    enumerable:true | false,
+    value:任意类型的值,
+    writable:true | false
+});
+```
+
+
+
+### 存取器描述
+
+**getter/setter**
+
+当设置或获取对象的某个属性的值的时候，可以提供getter/setter方法。
+
+- getter 是一种获得属性值的方法
+- setter是一种设置属性值的方法。
+
+**注意：当使用了getter或setter方法，不允许使用writable和value这两个属性**
+
+## Object.defineProperties()
+
+该方法直接在一个对象上定义新的属性或修改现有属性，并返回该对象。
+
+```js
+var obj = {};
+Object.defineProperties(obj, {
+  'property1': {
+    value: true,
+    writable: true
+  },
+  'property2': {
+    value: 'Hello',
+    writable: false
+  }
+  // etc. etc.
+});
+```
+
+## Object.setPrototypeOf() 
+
+`Object.setPrototypeOf`方法的作用与`__proto__`相同，用来设置一个对象的原型对象（prototype），返回参数对象本身。它是 ES6 正式推荐的设置原型对象的方法。
+
+```javascript
+// 格式
+Object.setPrototypeOf(object, prototype)
+
+// 用法
+const o = Object.setPrototypeOf({}, null);
+```
+
+该方法等同于下面的函数。
+
+```javascript
+function setPrototypeOf(obj, proto) {
+  obj.__proto__ = proto;
+  return obj;
+}
+```
+
+
+
+## Object.getPrototypeOf()
+
+该方法与`Object.setPrototypeOf`方法配套，用于读取一个对象的原型对象。
+
 ## Object.getOwnPropertyDescriptor()
 
 **`Object.getOwnPropertyDescriptor()`** 方法返回指定对象上一个自有属性对应的属性描述符。（自有属性指的是直接赋予该对象的属性，不需要从原型链上进行查找的属性）
@@ -146,6 +268,8 @@ console.log(descriptor1.configurable);
 console.log(descriptor1.value);
 // expected output: 42
 ```
+
+
 
 ## Object.getOwnPropertyDescriptors()
 
@@ -173,6 +297,22 @@ Object.getOwnPropertyDescriptors(obj)
 ```
 
 上面代码中，`Object.getOwnPropertyDescriptors()`方法返回一个对象，所有原对象的属性名都是该对象的属性名，对应的属性值就是该属性的描述对象。
+
+## Object.getOwnPropertyNames()
+
+**`Object.getOwnPropertyNames()`**方法返回一个由指定对象的所有自身属性的属性名（包括不可枚举属性但不包括 Symbol 值作为名称的属性）组成的数组。
+
+```js
+Object.getOwnPropertyNames(obj)
+```
+
+## Object.getOwnPropertySymbols()
+
+`Object.getOwnPropertySymbols()` 方法返回一个给定对象自身的所有 Symbol 属性的数组。
+
+```js
+Object.getOwnPropertySymbols(obj)
+```
 
 # 操作dom
 
