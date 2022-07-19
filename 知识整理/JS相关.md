@@ -157,20 +157,27 @@ Object.defineProperty(obj, prop, descriptor)
 
 > obj：必需。目标对象
 > prop：必需。需定义或修改的属性的名字
-> descriptor：必需。目标属性所拥有的特性
+> descriptor：必需。目标属性所拥有的特性（对象）
 
 返回值：
 
 > 传入函数的对象。即第一个参数obj
 
-给对象的属性添加特性描述，目前提供两种形式：数据描述和存取器描述。
+给对象的属性添加特性描述， 属性分两种：目前提供两种形式：数据描述和存取器描述。[数据属性和访问器属性。]
 
 ### 数据描述
 
-value: 设置属性的值
-writable: 值是否可以重写。true | false
-enumerable: 目标属性是否可以被枚举。true | false
-configurable: 目标属性是否可以被删除或是否可以再次修改特性（数据描述） true | false
+ [[Configurable]]：表示属性是否可以通过 delete 删除并重新定义，是否可以修改它的特 性，以及是否可以把它改为访问器属性。默认情况下，所有直接定义在对象上的属性的这个特 性都是 true，如前面的例子所示。
+
+虽然可以对同一个属性多次调用 Object.defineProperty()，但在把 configurable 设 置为 false 之后就会受限制了。
+
+把 configurable 设置为 false，意味着这个属性不能从对象上删除。非严格模式下对 这个属性调用 delete 没有效果，严格模式下会抛出错误。此外，一个属性被定义为不可配置之后，就 不能再变回可配置的了。再次调用 Object.defineProperty()并修改任何非 writable 属性会导致 错误（修改writable为true也会报错）
+
+  [[Enumerable]]：表示属性是否可以通过 for-in 循环返回。默认情况下，所有直接定义在对 象上的属性的这个特性都是 true，如前面的例子所示。 
+
+ [[Writable]]：表示属性的值是否可以被修改。默认情况下，所有直接定义在对象上的属性的 这个特性都是 true，如前面的例子所示。
+
+  [[Value]]：包含属性实际的值。这就是前面提到的那个读取和写入属性值的位置。这个特性 的默认值为 undefined。 
 
 ```js
 var obj = {
@@ -200,8 +207,9 @@ Object.defineProperty(obj,"newKey",{
 
 当设置或获取对象的某个属性的值的时候，可以提供getter/setter方法。
 
-- getter 是一种获得属性值的方法
-- setter是一种设置属性值的方法。
+-  [[Get]]：获取函数，在读取属性时调用。默认值为 undefined。
+-   [[Set]]：设置函数，在写入属性时调用。默认值为 undefined。
+-  访问器属性是不能直接定义的，必须使用 Object.defineProperty()。
 
 **注意：当使用了getter或setter方法，不允许使用writable和value这两个属性**
 
@@ -243,6 +251,19 @@ function setPrototypeOf(obj, proto) {
   obj.__proto__ = proto;
   return obj;
 }
+```
+
+警告 Object.setPrototypeOf()可能会严重影响代码性能。Mozilla 文档说得很清楚： “在所有浏览器和 JavaScript 引擎中，修改继承关系的影响都是微妙且深远的。这种影响并 不仅是执行 Object.setPrototypeOf()语句那么简单，而是会涉及所有访问了那些修 改过[[Prototype]]的对象的代码。”
+
+为避免使用 Object.setPrototypeOf()可能造成的性能下降，可以通过 Object.create()来创 建一个新对象，同时为其指定原型：
+
+```js
+ let biped = { numLegs: 2 }; 
+let person = Object.create(biped); 
+person.name = 'Matt'; 
+console.log(person.name);// Matt 
+console.log(person.numLegs); // 2 
+console.log(Object.getPrototypeOf(person) === biped); // true
 ```
 
 
@@ -313,6 +334,33 @@ Object.getOwnPropertyNames(obj)
 ```js
 Object.getOwnPropertySymbols(obj)
 ```
+
+# 原型和in操作符
+
+在上面整个例子中，name 随时可以通过实例或通过原型访问到。
+
+因此，调用"name" in persoon1 时始终返回 true，无论这个属性是否在实例上。
+
+如果要确定某个属性是否存在于原型上，则可以像下 面这样同时使用 hasOwnProperty()和 in 操作符： 
+
+```js
+function hasPrototypeProperty(object, name)
+{ return !object.hasOwnProperty(name) && (name in object); } 
+```
+
+只要通过对象可以访问，in 操作符就返回 true，而 hasOwnProperty()只有属性存在于实例上 时才返回 true。因此，只要 in 操作符返回 true 且 hasOwnProperty()返回 false，就说明该属性 是一个原型属性。相当于`hasPrototypeProperty(person, "name")`
+
+在 for-in 循环中使用 in 操作符时，可以通过对象访问且可以被枚举的属性都会返回，包括实例 属性和原型属性。
+
+遮蔽原型中不可枚举（[[Enumerable]]特性被设置为 false）属性的实例属性也会 在 for-in 循环中返回，因为默认情况下开发者定义的属性都是可枚举的。 
+
+要获得对象上所有可枚举的实例属性，可以使用 Object.keys()方法。这个方法接收一个对象作 为参数，返回包含该对象所有可枚举属性名称的字符串数组。
+
+如果想列出所有实例属性，无论是否可以枚举，都可以使用 Object.getOwnPropertyNames()
+
+在 ECMAScript 6 新增符号类型之后，相应地出现了增加一个 Object.getOwnPropertyNames() 的兄弟方法的需求，因为以符号为键的属性没有名称的概念。因此，Object.getOwnPropertySymbols()方法就出现了，这个方法与 Object.getOwnPropertyNames()类似，只是针对符号而已
+
+for-in 循环和 Object.keys() 的枚举顺序是不确定的，取决于 JavaScript 引擎，可能因浏览器而异。 Object.getOwnPropertyNames()、Object.getOwnPropertySymbols()和 Object.assign() 的枚举顺序是确定性的。先以升序枚举数值键，然后以插入顺序枚举字符串和符号键。在对象字面量中 定义的键以它们逗号分隔的顺序插入。
 
 # 操作dom
 
@@ -395,7 +443,15 @@ javascript提供了一个文档碎片DocumentFragment的机制。
 
 # 原型与原型链
 
+![image-20220719190859486](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220719190859486.png)
 
+无论何时，只要创建一个函数，就会按照特定的规则为这个函数创建一个 prototype 属性（指向 原型对象）。默认情况下，所有原型对象自动获得一个名为 constructor 的属性，指回与之关联的构 造函数。对前面的例子而言，Person.prototype.constructor 指向 Person。
+
+然后，因构造函数而异，可能会给原型对象添加其他属性和方法。 在自定义构造函数时，原型对象默认只会获得 constructor 属性，其他的所有方法都继承自 Object。
+
+每次调用构造函数创建一个新实例，这个实例的内部[[Prototype]]指针就会被赋值为构造函数的原型对象。脚本中没有访问这个[[Prototype]]特性的标准方式，但 Firefox、Safari 和 Chrome 会在每个对象上暴露proto___属性，通过这个属性可以访问对象的原型。在其他实现中，这个特性 完全被隐藏了。
+
+关键在于理解这一点：实例与构造函数原型之间有直接的联系，但实例与构造函数之 间没有。
 
 # 数组方法
 
@@ -429,7 +485,17 @@ Promise 是异步编程的一种解决方案，解决了回调地狱的问题。
 
 ## 1 什么是生成器
 
-generator（生成器）就是生成 （iterator）遍历器的函数。
+语法上，首先可以把它理解成，Generator 函数是一个状态机，封装了多个内部状态。
+
+执行 Generator 函数会返回一个遍历器对象，也就是说，Generator 函数除了状态机，还是一个遍历器对象生成函数。返回的遍历器对象，可以依次遍历 Generator 函数内部的每一个状态。
+
+形式上，Generator 函数是一个普通函数，但是有两个特征。一是，`function`关键字与函数名之间有一个星号；二是，函数体内部使用`yield`表达式，定义不同的内部状态（`yield`在英语里的意思就是“产出”）。
+
+Generator 函数的调用方法与普通函数一样，也是在函数名后面加上一对圆括号。不同的是，调用 Generator 函数后，该函数并不执行，返回的也不是函数运行结果，而是一个指向内部状态的指针对象，也就是上一章介绍的遍历器对象（Iterator Object）。
+
+下一步，必须调用遍历器对象的`next`方法，使得指针移向下一个状态。也就是说，每次调用`next`方法，内部指针就从函数头部或上一次停下来的地方开始执行，直到遇到下一个`yield`表达式（或`return`语句）为止。换言之，Generator 函数是分段执行的，`yield`表达式是暂停执行的标记，而`next`方法可以恢复执行。
+
+总结：调用 Generator 函数，返回一个遍历器对象，代表 Generator 函数的内部指针。以后，每次调用遍历器对象的`next`方法，就会返回一个有着`value`和`done`两个属性的对象。`value`属性表示当前的内部状态的值，是`yield`表达式后面那个表达式的值；`done`属性是一个布尔值，表示是否遍历结束。
 
 ## 2 定义生成器
 
