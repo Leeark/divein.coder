@@ -4,7 +4,9 @@
 
 ECMAScript有6种简单数据类型（也称为原始类型）: Undefined、Null、Boolean、Number、String和Symbol。
 
-Symbol（符号）是ECMAScript 6新增的。
+Symbol（符号）是ECMAScript 6新增的。符号是原始值，且符号实例是唯一、不可变的。 符号的用途是确保对象属性使用唯一标识符，不会发生属性冲突的危险。
+
+符号没有字面量语法，这也是它们发挥作用的关键。按照规范，你只要创建 Symbol()实例并将其 用作对象的新属性，就可以保证它不会覆盖已有的对象属性，无论是符号属性还是字符串属性。
 
 还有一种复杂数据类型叫Object（对象）。
 
@@ -475,7 +477,7 @@ javascript提供了一个文档碎片DocumentFragment的机制。
 function SuperType() { this.colors = ["red", "blue", "green"]; } 
 function SubType() {}
 // 继承 SuperType 
-SubType.prototype = new SuperType(); 
+SubType.prototype = new SuperType(); //B类的单个实例对象，唯一的
 let instance1 = new SubType(); 
 instance1.colors.push("black"); 
 console.log(instance1.colors); // "red,blue,green,black" 
@@ -493,7 +495,9 @@ console.log(instance2.colors); // "red,blue,green,black"
 
 经典继承；盗用伪装
 
-基本思路很简单：在子类构造函数中调用父类构造函数。因为毕竟函数就是在特定上下文中执行代码的简单对象，所以可以使用 apply()和 call()方法以新创建的对象为上下文执行构造函数。
+基本思路很简单：在子类构造函数中调用父类构造函数。
+
+因为毕竟函数就是在特定上下文中执行代码的简单对象，所以可以使用 apply()和 call()方法以新创建的对象为上下文执行构造函数。
 
 ```js
 function SuperType() {
@@ -512,7 +516,7 @@ console.log(instance2.colors); // "red,blue,green"
 
 优点：
 
-1，每个实例维护自己的属性
+1，**每个实例维护自己的属性**（主要解决的问题）
 
 2，可以向父类构造函数传参
 
@@ -537,7 +541,7 @@ console.log(instance.age); // 29
 
 ## 组合继承
 
-组合继承（有时候也叫伪经典继承）综合了原型链和盗用构造函数，将两者的优点集中了起来。基 本的思路是使用原型链继承原型上的属性和方法，而通过盗用构造函数继承实例属性。这样既可以把方 法定义在原型上以实现重用，又可以让每个实例都有自己的属性。
+组合继承（有时候也叫伪经典继承）综合了原型链和盗用构造函数，将两者的优点集中了起来。基本的思路是使用**原型链继承原型上的属性和方法，而通过盗用构造函数继承实例属性。**这样既可以把方 法定义在原型上以实现重用，又可以让每个实例都有自己的属性。
 
 ```js
 function SuperType(name){
@@ -548,11 +552,11 @@ SuperType.prototype.sayName = function() {
  console.log(this.name);
 };
 function SubType(name, age){
- // 继承属性
+ // 继承属性，使得实例维护不同属性
  SuperType.call(this, name);
  this.age = age;
 }
-// 继承方法
+// 继承方法，使得方法能够复用
 SubType.prototype = new SuperType();
 SubType.prototype.sayAge = function() {
  console.log(this.age);
@@ -579,9 +583,9 @@ instance2.sayAge(); // 27
 ```js
 //2006 年，Douglas Crockford 写了一篇文章：《JavaScript 中的原型式继承》（“Prototypal Inheritance in JavaScript”）。这篇文章介绍了一种不涉及严格意义上构造函数的继承方法。他的出发点是即使不自定义类型也可以通过原型实现对象之间的信息共享。文章最终给出了一个函数：
 function object(o) {
- function F() {}
- F.prototype = o;
- return new F();
+ function F() {} //工具构造函数
+ F.prototype = o; //改写原型
+ return new F(); //新建对象并返回
 }
 let person = {
  name: "Nicholas",
@@ -621,11 +625,11 @@ function createAnother(original){
 }
 ```
 
-注意 通过寄生式继承给对象添加函数会导致函数难以重用，与构造函数模式类似。
+**注意 通过寄生式继承给对象添加函数会导致函数难以重用，与构造函数模式类似。**
 
 ## 寄生式组合继承
 
-寄生式组合继承通过盗用构造函数继承属性，但使用混合式原型链继承方法。基本思路是不通过调 用父类构造函数给子类原型赋值，而是取得父类原型的一个副本。说到底就是使用寄生式继承来继承父 类原型，然后将返回的新对象赋值给子类原型。寄生式组合继承的基本模式如下所示：
+寄生式组合继承通过盗用构造函数继承属性，但使用混合式原型链继承方法。基本思路是不通过调用父类构造函数给子类原型赋值，而是取得父类原型的一个副本。说到底就是使用寄生式继承来继承父 类原型，然后将返回的新对象赋值给子类原型。寄生式组合继承的基本模式如下所示：
 
 ```js
 function inheritPrototype(subType, superType) {
@@ -635,7 +639,7 @@ function inheritPrototype(subType, superType) {
 }
 ```
 
-这个 inheritPrototype()函数实现了寄生式组合继承的核心逻辑。这个函数接收两个参数：子 类构造函数和父类构造函数。在这个函数内部，第一步是创建父类原型的一个副本。然后，给返回的 prototype 对象设置 constructor 属性，解决由于重写原型导致默认 constructor 丢失的问题。最 后将新创建的对象赋值给子类型的原型。
+这个 inheritPrototype()函数实现了寄生式组合继承的核心逻辑。这个函数接收两个参数：子 类构造函数和父类构造函数。在这个函数内部，第一步是创建父类原型的一个副本。然后，给返回的 prototype 对象设置 constructor 属性，**解决由于重写原型导致默认 constructor 丢失的问题**。最 后将新创建的对象赋值给子类型的原型。
 
 ```js
 function SuperType(name) {
@@ -656,6 +660,80 @@ SubType.prototype.sayAge = function() {
 ```
 
 这里只调用了一次 SuperType 构造函数，避免了 SubType.prototype 上不必要也用不到的属性， 因此可以说这个例子的效率更高。而且，原型链仍然保持不变，因此 instanceof 操作符和 isPrototypeOf()方法正常有效。寄生式组合继承可以算是引用类型继承的最佳模式。
+
+## 类继承
+
+ES6 类支持单继承。使用 extends 关键字，就可以继承任何拥有[[Construct]]和原型的对象。 很大程度上，这意味着不仅可以继承一个类，也可以继承普通的构造函数（保持向后兼容）
+
+派生类都会通过原型链访问到类和原型上定义的方法。this 的值会反映调用相应方法的实例或者类
+
+# 类
+
+类可以包含构造函数方法、实例方法、获取函数、设置函数和静态类方法，但这些都不是必需的。
+
+constructor 关键字用于在类定义块内部创建类的构造函数。方法名 constructor 会告诉解释器 在使用 new 操作符创建类的新实例时，应该调用这个函数。
+
+使用 new 操作符实例化 Person 的操作等于使用 new 调用其构造函数。唯一可感知的不同之处就 是，JavaScript 解释器知道使用 new 和类意味着应该使用 constructor 函数进行实例化。
+
+类的写法
+
+```js
+class Person {
+ constructor() {
+ // 添加到 this 的所有内容都会存在于不同的实例上
+ this.locate = () => console.log('instance', this);
+ }
+ // 定义在类的原型对象上
+ locate() {
+ console.log('prototype', this);
+ }
+ // 定义在类本身上
+ static locate() {
+ console.log('class', this);
+ }
+}
+let p = new Person();
+p.locate(); // instance, Person {}
+Person.prototype.locate(); // prototype, {constructor: ... }
+Person.locate(); // class, class Person {}
+```
+
+派生类的方法可以通过 super 关键字引用它们的原型。这个关键字只能在派生类中使用，而且仅限于类构造函数、实例方法和静态方法内部。在类构造函数中使用 super 可以调用父类构造函数。
+
+```js
+class Vehicle {
+ constructor() {
+ this.hasEngine = true;
+ }
+}
+class Bus extends Vehicle {
+ constructor() {
+ // 不要在调用 super()之前引用 this，否则会抛出 ReferenceError
+ super(); // 相当于 super.constructor()
+ console.log(this instanceof Vehicle); // true
+ console.log(this); // Bus { hasEngine: true }
+ }
+}
+new Bus();
+```
+
+在静态方法中可以通过 super 调用继承的类上定义的静态方法：
+
+```js
+class Vehicle {
+ static identify() {
+ console.log('vehicle');
+ }
+}
+class Bus extends Vehicle {
+ static identify() {
+ super.identify();
+ }
+}
+Bus.identify(); // vehicle
+```
+
+
 
 # 数组方法
 
