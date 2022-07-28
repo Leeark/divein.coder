@@ -1,8 +1,225 @@
 # CSS3新特性
 
-![img](https://camo.githubusercontent.com/176aeca505f99a27fa7f37cebffeddebddeda2488d29a4ed167d4693da875fdc/68747470733a2f2f7374617469632e7675652d6a732e636f6d2f64353866366466302d396235652d313165622d616239302d6439616538313462323430642e706e67)
+## CSS3边框
 
-`flex`弹性布局、`Grid`栅格布局等
+- border-radius
+
+- box-shadow
+
+  该属性可设置的值包括阴影的 X 轴偏移量、Y 轴偏移量、模糊半径、扩散半径和颜色。
+
+  模糊半径(blur-radius):(0,++)值越大，模糊面积越大，阴影越大越淡。
+
+  扩散半径(spread-radius):(--,++)取负值，阴影收缩；取正值阴影扩大。需要考虑inset。
+
+- border-image
+
+  可设置的值：source slice width outset repeat | initial | inherit;
+
+## CSS3 背景
+
+- background-image
+
+  如：background-image: url(img_flwr.gif)
+
+  CSS3 允许你在元素上添加多个背景图像。
+
+- background-size
+
+- background-origin
+
+  background-origin 属性指定了背景图像的位置区域。
+
+  content-box, padding-box,和 border-box区域内可以放置背景图像。
+
+- background-clip
+
+  CSS3中background-clip背景剪裁属性是从指定位置开始绘制。区域同origin选项。
+
+```css
+//渐变：
+线性渐变（Linear Gradients）- 向下/向上/向左/向右/对角方向
+径向渐变（Radial Gradients）- 由它们的中心定义
+background-image: linear-gradient(direction, color-stop1, color-stop2, ...);
+```
+
+## CSS3文本效果
+
+- text-shadow
+- box-shadow
+- text-overflow：clip；ellipsis
+- word-wrap
+- word-break：keep-all；break-all（有连字符；无）
+
+## CSS3字体
+
+使用以前 CSS 的版本，网页设计师不得不使用用户计算机上已经安装的字体。使用 **CSS3**，网页设计师可以使用他/她喜欢的任何字体。只需简单的将字体文件包含在网站中，它会自动下载给需要的用户。您"自己的"的字体是在 **CSS3 @font-face** 规则中定义的。
+
+在新的 @font-face 规则中，您必须首先定义字体的名称（比如 myFirstFont），然后指向该字体文件。
+
+如：
+
+```CSS
+<style> 
+@font-face
+{
+    font-family: myFirstFont;
+    src: url(sansation_light.woff);
+}
+ 
+div
+{
+    font-family:myFirstFont;
+}
+</style>
+```
+
+## CSS3转换
+
+CSS3 转换可以对元素进行移动、缩放、转动、拉长或拉伸。
+
+### 2D转换
+
+transform:如下属性
+
+- translate()
+
+  translate(x,y)方法，根据左(X轴)和顶部(Y轴)位置给定的参数，从当前元素位置移动。正值：→↓
+
+- rotate()
+
+  rotate(**deg)方法，在一个给定度数顺时针旋转的元素。负值是允许的，这样是元素逆时针旋转。
+
+- scale()
+
+  scale()方法，该元素增加或减少的大小，取决于宽度（X轴）和高度（Y轴）的参数
+
+- skew()
+
+  skew(**deg)包含两个参数值，分别表示X轴和Y轴倾斜的角度，如果第二个参数为空，则默认为0，参数为负表示向相反方向倾斜。
+
+  - skewX(<angle>);表示只在X轴(水平方向)倾斜。
+  - skewY(<angle>);表示只在Y轴(垂直方向)倾斜。
+
+- matrix()
+
+  matrix()方法和2D变换方法合并成一个。
+
+  matrix 方法有六个参数，包含旋转，缩放(2个)，移动（2个）和倾斜功能。
+
+### 3D转换
+
+transform:如下属性
+
+- rotateX()
+
+  rotateX()方法，围绕其在一个给定度数X轴旋转的元素。
+
+- rotateY()
+
+  rotateY()方法，围绕其在一个给定度数Y轴旋转的元素。
+
+## CSS3过渡
+
+CSS3 过渡是元素从一种样式逐渐改变为另一种的效果。
+
+所有属性
+
+```css
+div {
+  transition-property: width;(all/property)
+  transition-duration: 1s;
+  transition-timing-function: linear;(ease;ease-in;ease-out;ease-in-out;cubic-                                       bezier(n,n,n,n))
+  transition-delay: 2s;
+}
+
+```
+
+## CSS3动画
+
+@keyframes 规则是创建动画。@keyframes 规则内指定一个 CSS 样式和动画将逐步从目前的样式更改为新的样式。
+
+```css
+@keyframes myfirst
+{
+    0%   {background: red; left:0px; top:0px;}
+    25%  {background: yellow; left:200px; top:0px;}
+    50%  {background: blue; left:200px; top:200px;}
+    75%  {background: green; left:0px; top:200px;}
+    100% {background: red; left:0px; top:0px;}
+}
+div {
+    animation-name: myfirst;
+    animation-duration: 5s;
+    animation-timing-function: linear;
+    animation-delay: 2s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-play-state: running;
+}
+ 
+```
+
+## CSS3 多列
+
+## CSS3用户界面
+
+- resize
+- box-sizing
+- outline-offset
+
+## CSS3图片
+
+滤镜：
+
+CSS `filter` 属性用为元素添加可视效果 (例如：模糊与饱和度) 。
+
+具体配置：https://www.runoob.com/cssref/css3-pr-filter.html
+
+## CSS3 弹性盒子(Flex Box)
+
+### 父元素：六个属性
+
+主轴方向：flex-direction:       `row | row-reverse | column | column-reverse;`
+
+如何换行：flex-wrap:          `nowrap | wrap | wrap-reverse;`
+
+flex-flow:      `<flex-direction> || <flex-wrap>;`
+
+主轴对齐方式：justify-content:      `flex-start | flex-end | center | space-between | space-around;`
+
+副轴对齐方式：align-items:       `flex-start | flex-end | center | baseline | stretch;`
+
+align-content: 定义了多根轴线的对齐方式。如果项目只有一根轴线，该属性不起作用。
+
+ `flex-start | flex-end | center | space-between | space-around | stretch;`
+
+### 子元素：六个属性
+
+order；flex-grow；flex-shrink；flex-basis；flex；align-self
+
+```css
+ flex: none | [ <'flex-grow'> <'flex-shrink'>? || <'flex-basis'> ]
+```
+
+```css
+ align-self: auto | flex-start | flex-end | center | baseline | stretch;
+```
+
+Grid栅格布局等
+
+## CSS3 多媒体查询
+
+媒体查询可用于检测很多事情，例如：
+
+- viewport(视窗) 的宽度与高度
+- 设备的宽度与高度
+- 朝向 (智能手机横屏，竖屏) 。
+- 分辨率
+
+# CSS网格布局
+
+
 
 # CSS权重
 
@@ -33,12 +250,6 @@
 ```
 
 区别：伪类和伪元素的区别，最关键的点在于如果没有伪元素(或伪类)，**是否需要添加元素才能达到目的**，如果是则是伪元素，反之则是伪类。
-
-
-
-# animation基本使用
-
-![image-20220713102715715](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220713102715715.png)
 
 # HTML5新特性
 
@@ -207,36 +418,6 @@ div{
 }
 ```
 
-# Flex布局
-
-## 父元素：六个属性
-
-主轴方向：flex-direction:       `row | row-reverse | column | column-reverse;`
-
-如何换行：flex-wrap:          `nowrap | wrap | wrap-reverse;`
-
-flex-flow:      `<flex-direction> || <flex-wrap>;`
-
-主轴对齐方式：justify-content:      `flex-start | flex-end | center | space-between | space-around;`
-
-副轴对齐方式：align-items:       `flex-start | flex-end | center | baseline | stretch;`
-
-align-content: 定义了多根轴线的对齐方式。如果项目只有一根轴线，该属性不起作用。
-
- `flex-start | flex-end | center | space-between | space-around | stretch;`
-
-## 子元素：六个属性
-
-order；flex-grow；flex-shrink；flex-basis；flex；align-self
-
-```css
- flex: none | [ <'flex-grow'> <'flex-shrink'>? || <'flex-basis'> ]
-```
-
-```css
- align-self: auto | flex-start | flex-end | center | baseline | stretch;
-```
-
 # *border-style设置1-4个值
 
 1：所有边框。2：上下；左右。3：上；右左；下。4：上；右；左；下。
@@ -399,11 +580,7 @@ box-sizing:border-box[IE盒模型-怪异盒模型]因为低版本IE中，元素�
 
 
 
-# box-shadow
 
-该属性可设置的值包括阴影的 X 轴偏移量、Y 轴偏移量、模糊半径、扩散半径和颜色。
-
-![image-20220713103201817](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220713103201817.png)
 
 # 其他
 
