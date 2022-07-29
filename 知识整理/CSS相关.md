@@ -251,27 +251,7 @@ Grid栅格布局等
 
 区别：伪类和伪元素的区别，最关键的点在于如果没有伪元素(或伪类)，**是否需要添加元素才能达到目的**，如果是则是伪元素，反之则是伪类。
 
-# HTML5新特性
 
-1.语义化标签
-
-2.增强型表单包括属性以及元素
-
-3.新增视频<video>和音频<audio>标签
-
-4.Canvas 图形
-
-5.地理定位
-
-6.拖放API
-
-7.SVG绘图
-
-8.Web Worker
-
-9.Web Storage
-
-10.Web Socket
 
 # *position
 
@@ -300,6 +280,44 @@ relative、absolute 、fixed。这三种定位都不会对其他元素的位置�
 因此，它能够形成"动态固定"的效果。比如，网页的搜索工具栏，初始加载时在自己的默认位置（`relative`定位）。页面向下滚动时，工具栏变成固定位置，始终停留在页面头部（`fixed`定位）。
 
 应用：堆叠效果；表头锁定。
+
+# rem、em、px
+
+px像素（Pixel）。绝对长度单位。
+
+em，相对长度单位。
+
+- 子元素字体（font-size）大小的em是相对于父元素字体大小
+- 元素的width/height/padding/margin用em的话是相对于该元素的font-size
+
+rem，相对长度单位，相对于根元素（html标签）的字体大小。
+
+# 可替换元素和不可替换元素
+
+元素是文档结构的基础，在`CSS`中，每个元素生成了一个包含了元素内容的框（`box`，也译为“盒子”）。但是不同的元素显示的方式会有所不同，例如`<div>`和`<span>`就不同，而`<strong>`和`<p>`也不一样。在文档类型定义（DTD）中对不同的元素规定了不同的类型，这也是DTD对文档之所以重要的原因之一。
+
+从元素本身的特点来讲，可以分为可替换元素(replaceable element)和不可替换元素(none-replaceable element)。
+
+## 可替换元素
+
+*可替换元素就是浏览器根据元素的标签和属性，来决定元素的具体显示内容。*
+
+> 例如浏览器会根据`<img>`标签的`src`属性的值来读取图片信息并显示出来，而如果查看`(x)html`代码，则看不到图片的实际内容；又例如根据`<input>`标签的`type`属性来决定是显示输入框，还是单选按钮等。
+
+*`(x)html`中的`<img>`、`<input>`、`<textarea>`、`<select>`、`<object>`都是替换元素。这些元素往往没有实际的内容，即是一个空元素。*
+
+## 不可替换元素
+
+`(x)html` 的大多数元素是不可替换元素，*即其内容直接表现给用户端（例如浏览器）*。
+
+> 例如：`<p>段落的内容</p>`
+> 段落<p>是一个不可替换元素，文字“段落的内容”全被显示。
+
+https://segmentfault.com/a/1190000006835284
+
+# Doctype
+
+在 [HTML](https://developer.mozilla.org/zh-CN/docs/Glossary/HTML) 中，文档类型 doctype 的声明是必要的。在所有文档的头部，你都将会看到"`<!DOCTYPE html>`" 的身影。这个声明的目的是防止浏览器在渲染文档时，切换到我们称为“[怪异模式 (兼容模式)](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Quirks_Mode_and_Standards_Mode)”的渲染模式。“`<!DOCTYPE html>`" 确保浏览器按照最佳的相关规范进行渲染，而不是使用一个不符合规范的渲染模式。
 
 # *opacity VS RGBA
 
@@ -445,6 +463,128 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 
 **模糊半径就是渐变阴影半径，而扩散半径就是纯色阴影半径**。并且，渐变阴影包在扩散阴影外面。
 
+# 元素的显示和隐藏
+
+| 显示隐藏方式                     | 是否占据空间      | 是否导致浏览器重排重绘     | 能否触发点击事件 |
+| -------------------------------- | ----------------- | -------------------------- | ---------------- |
+| display : none                   | 不占空间          | 是                         | 否               |
+| visibility : hidden              | 占空间            | 否                         | 否               |
+| opacity : 0                      | 占空间            | 否                         | 是               |
+| 设置height，width等盒模型属性为0 | 设置为0后不占空间 | 可能会导致浏览器重排和重绘 | 否               |
+
+# 重排与重绘
+
+## 页面生成的过程：
+
+1.HTML 被 HTML 解析器解析成 DOM 树；
+
+2.CSS  被 CSS 解析器解析成 CSSOM 树；
+
+3.结合 DOM 树和 CSSOM 树，生成一棵渲染树(Render Tree)，这一过程称为 Attachment；
+
+4.生成布局(flow)，浏览器在屏幕上“画”出渲染树中的所有节点；
+
+5.将布局绘制(paint)在屏幕上，显示出整个页面。
+
+第四步和第五步是最耗时的部分，这两步合起来，就是我们通常所说的渲染。
+
+## 渲染：
+
+在页面的生命周期中，**网页生成的时候，至少会渲染一次。在用户访问的过程中，还会不断触发重排(reflow)和重绘(repaint)**，不管页面发生了重绘还是重排，都会影响性能，最可怕的是重排，会使我们付出高额的性能代价，所以我们应尽量避免。
+
+- 重绘：某些元素的外观被改变，例如：元素的填充颜色
+- 重排：重新生成布局，重新排列元素。
+
+## 重排(reflow)：
+
+### 概念：
+
+当DOM的变化影响了元素的几何信息(元素的的位置和尺寸大小)，浏览器需要重新计算元素的几何属性，将其安放在界面中的正确位置，这个过程叫做重排。
+
+重排也叫回流，简单的说就是重新生成布局，重新排列元素。
+
+### 触发重排：
+
+- 页面初始渲染，这是开销最大的一次重排
+- 添加/删除可见的DOM元素
+- 改变元素位置
+- 改变元素尺寸，比如边距、填充、边框、宽度和高度等
+- 改变元素内容，比如文字数量，图片大小等
+- 改变元素字体大小
+- 改变浏览器窗口尺寸，比如resize事件发生时
+- 激活CSS伪类（例如：`:hover`）
+- 设置 style 属性的值，因为通过设置style属性改变结点样式的话，每一次设置都会触发一次reflow
+- 查询某些属性或调用某些计算方法：offsetWidth、offsetHeight等，除此之外，当我们调用 `getComputedStyle`方法，或者IE里的 `currentStyle` 时，也会触发重排，原理是一样的，都为求一个“即时性”和“准确性”。
+
+### 重排影响的范围：
+
+由于浏览器渲染界面是基于流式布局模型的，所以触发重排时会对周围DOM重新排列，影响的范围有两种：
+
+- 全局范围：从根节点html开始对整个渲染树进行重新布局。
+- 局部范围：对渲染树的某部分或某一个渲染对象进行重新布局。
+
+## 重绘(Repaints):
+
+### 概念：
+
+当一个元素的外观发生改变，但没有改变布局,重新把元素外观绘制出来的过程，叫做重绘。
+
+### 常见的引起重绘的属性：
+
+| 属性：          | --               | --                  | --                |
+| --------------- | ---------------- | ------------------- | ----------------- |
+| color           | border-style     | visibility          | background        |
+| text-decoration | background-image | background-position | background-repeat |
+| outline-color   | outline          | outline-style       | border-radius     |
+| outline-width   | box-shadow       | background-size     |                   |
+
+## 重排优化建议：
+
+重排的代价是高昂的，会破坏用户体验，并且让UI展示非常迟缓。通过减少重排的负面影响来提高用户体验的最简单方式就是尽可能的减少重排次数，重排范围。下面是一些行之有效的建议，大家可以用来参考。
+
+### 减少重排范围
+
+我们应该尽量以局部布局的形式组织html结构，尽可能小的影响重排的范围。
+
+- 尽可能在低层级的DOM节点上，而不是像上述全局范围的示例代码一样，如果你要改变p的样式，class就不要加在div上，通过父元素去影响子元素不好。
+- 不要使用 table 布局，可能很小的一个小改动会造成整个 table 的重新布局。那么在不得已使用table的场合，可以设置table-layout:auto;或者是table-layout:fixed这样可以让table一行一行的渲染，这种做法也是为了限制reflow的影响范围。
+
+### 减少重排次数
+
+#### 1.样式集中改变
+
+不要频繁的操作样式，对于一个静态页面来说，明智且可维护的做法是更改类名而不是修改样式，对于动态改变的样式来说，相较每次微小修改都直接触及元素，更好的办法是统一在 `cssText` 变量中编辑。虽然现在大部分现代浏览器都会有 `Flush` 队列进行渲染队列优化，但是有些老版本的浏览器比如IE6的效率依然低下。
+
+#### 2.分离读写操作
+
+DOM 的多个读操作（或多个写操作），应该放在一起。不要两个读操作之间，加入一个写操作。
+
+#### 3.将 DOM 离线
+
+“离线”意味着不在当前的 DOM 树中做修改，我们可以这样做：
+
+- 使用 display:none
+
+  一旦我们给元素设置 `display:none` 时（只有一次重排重绘），元素便不会再存在在渲染树中，相当于将其从页面上“拿掉”，我们之后的操作将不会触发重排和重绘，添加足够多的变更后，通过 `display`属性显示（另一次重排重绘）。通过这种方式即使大量变更也只触发两次重排。另外，`visibility : hidden` 的元素只对重绘有影响，不影响重排。
+
+- 通过 [documentFragment](https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FAPI%2FDocumentFragment) 创建一个 `dom` 碎片,在它上面批量操作 `dom`，操作完成之后，再添加到文档中，这样只会触发一次重排。
+
+- 复制节点，在副本上工作，然后替换它！
+
+#### 4.使用 absolute 或 fixed 脱离文档流
+
+使用绝对定位会使的该元素单独成为渲染树中 `body` 的一个子元素，重排开销比较小，不会对其它节点造成太多影响。当你在这些节点上放置这个元素时，一些其它在这个区域内的节点可能需要重绘，但是不需要重排。
+
+#### 5.优化动画
+
+- 可以把动画效果应用到 `position`属性为 `absolute` 或 `fixed` 的元素上，这样对其他元素影响较小。
+
+  动画效果还应牺牲一些平滑，来换取速度，这中间的度自己衡量： 比如实现一个动画，以1个像素为单位移动这样最平滑，但是Layout就会过于频繁，大量消耗CPU资源，如果以3个像素为单位移动则会好很多
+
+- 启用GPU加速 `GPU` 硬件加速是指应用 `GPU` 的图形性能对浏览器中的一些图形操作交给 `GPU` 来完成，因为 `GPU` 是专门为处理图形而设计，所以它在速度和能耗上更有效率。
+
+  `GPU` 加速通常包括以下几个部分：Canvas2D，布局合成, CSS3转换（transitions），CSS3 3D变换（transforms），WebGL和视频(video)。
+
 # *display:none VS visibility:hidden
 
 display:none:隐藏，不占有原来位置。页面将显示为好像该元素不在其中。
@@ -580,7 +720,49 @@ box-sizing:border-box[IE盒模型-怪异盒模型]因为低版本IE中，元素�
 
 
 
+# 画一个三角形
 
+```css
+#triangle02{
+    width: 0;
+    height: 0;
+    border-top: 50px solid blue;
+    border-right: 50px solid red;
+    border-bottom: 50px solid green;
+    border-left: 50px solid yellow;
+    }
+```
+
+![image-20220729211959885](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220729211959885.png)
+
+```css
+#triangle03{
+    width: 0;
+    height: 0;
+    border: 50px solid transparent;
+    border-top: 50px solid blue;
+    }
+#triangle04{
+    width: 0;
+    height: 0;
+    border: 50px solid transparent;
+    border-right: 50px solid red;
+    }
+#triangle05{
+    width: 0;
+    height: 0;
+    border: 50px solid transparent;
+    border-bottom: 50px solid green;
+    }
+#triangle06{
+    width: 0;
+    height: 0;
+    border: 50px solid transparent;
+    border-left: 50px solid yellow;
+    }
+```
+
+![image-20220729212050998](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220729212050998.png)
 
 # 其他
 
