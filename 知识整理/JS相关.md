@@ -449,6 +449,130 @@ javascript提供了一个文档碎片DocumentFragment的机制。
 - （块级作用域）
 - var 声明是全局作用域或函数作用域，而 let 和 const 是块作用域。 var 变量可以在其范围内更新和重新声明； let 变量可以被更新但不能重新声明； const 变量既不能更新也不能重新声明。 它们都被提升到其作用域的顶端。
 
+# 闭包
+
+## 定义
+
+闭包就是能够读取其他函数内部变量的函数。
+
+```js
+function test(){
+    var age=18;
+    function  addAge(){
+        age++;
+        alert(age);
+    }
+    return addAge;
+}
+    var fn=test();    fn();//弹出19
+
+```
+
+**三大特性：**
+
+\- 函数嵌套函数。
+\- 函数内部可以引用外部的参数和变量。
+\- 参数和变量不会被垃圾回收机制回收。
+
+## 优点
+
+\- 希望一个变量长期存储在内存中。
+\- 避免全局变量的污染。
+\- 私有成员的存在。
+
+## 缺点
+
+\- 常驻内存，增加内存使用量。
+\- 使用不当会很容易造成内存泄露。
+
+
+
+# call/apply/bind
+
+Function.prototype.call()
+
+```
+function.call(thisArg, arg1, arg2, ...)
+```
+
+`**call()**` 方法使用一个指定的 `this` 值和单独给出的一个或多个参数来调用一个函数。
+
+如果没有传递第一个参数，`this` 的值将会被绑定为全局对象。
+
+```js
+function Product(name, price) {
+  this.name = name;
+  this.price = price;
+}
+
+function Food(name, price) {
+  Product.call(this, name, price);//this占位
+  this.category = 'food';
+}
+
+console.log(new Food('cheese', 5).name);
+// expected output: "cheese"
+```
+
+```js
+function greet() {
+  var reply = [this.animal, 'typically sleep between', this.sleepDuration].join(' ');
+  console.log(reply);
+}
+
+var obj = {
+  animal: 'cats', sleepDuration: '12 and 16 hours'
+};
+
+greet.call(obj);  // cats typically sleep between 12 and 16 hours
+```
+
+**备注：**该方法的语法和作用与 [`apply()`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/apply) 方法类似，只有一个区别，就是 `call()` 方法接受的是**一个参数列表**，而 `apply()` 方法接受的是**一个包含多个参数的数组**。
+
+Function.prototype.bind()
+
+`**bind()**` 方法创建一个新的函数，在 `bind()` 被调用时，这个新函数的 `this` 被指定为 `bind()` 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。
+
+```js
+const module = {
+  x: 42,
+  getX: function() {
+    return this.x;
+  }
+};
+
+const unboundGetX = module.getX;
+console.log(unboundGetX()); // The function gets invoked at the global scope
+// expected output: undefined
+
+const boundGetX = unboundGetX.bind(module);
+console.log(boundGetX());
+// expected output: 42
+```
+
+在默认情况下，使用 [`window.setTimeout()`](https://developer.mozilla.org/zh-CN/docs/Web/API/setTimeout) 时，`this` 关键字会指向 [`window`](https://developer.mozilla.org/zh-CN/docs/Web/API/Window)（或 `global`）对象。当类的方法中需要 `this` 指向类的实例时，你可能需要显式地把 `this` 绑定到回调函数，就不会丢失该实例的引用。
+
+```js
+function LateBloomer() {
+  this.petalCount = Math.ceil(Math.random() * 12) + 1;
+}
+
+// 在 1 秒钟后声明 bloom
+LateBloomer.prototype.bloom = function() {
+  window.setTimeout(this.declare.bind(this), 1000);
+};
+
+LateBloomer.prototype.declare = function() {
+  console.log('I am a beautiful flower with ' +
+    this.petalCount + ' petals!');
+};
+
+var flower = new LateBloomer();
+flower.bloom();  // 一秒钟后，调用 'declare' 方法
+```
+
+
+
 # 原型与原型链
 
 ![image-20220719190859486](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220719190859486.png)
@@ -466,6 +590,36 @@ javascript提供了一个文档碎片DocumentFragment的机制。
 重温一下构造函数、原型和实例的关系：每个构造函数都有一个原型对象，原型有 一个属性指回构造函数，而实例有一个内部指针指向原型。如果原型是另一个类型的实例呢？那就意味 着这个原型本身有一个内部指针指向另一个原型，相应地另一个原型也有一个指针指向另一个构造函 数。这样就在实例和原型之间构造了一条原型链。这就是原型链的基本构想。
 
 
+
+# JavaScript执行机制
+
+单线程 非阻塞：任务队列；事件轮询
+
+js是一门单线程的非阻塞脚本语言，同一时刻只允许一个代码段执行。
+
+单线程机制下，执行异步任务阻塞现象：等待结果返回，后面的代码无法执行。
+
+单线程原因：JavaScript的Web端使用需要操作dom，线程1删除了这个DOM节点，线程2要操作这个DOM节点，产生矛盾。
+
+js的另一大特点是非阻塞，实现这一点的关键在于任务队列。
+
+我们讲了单线程的弊端，JavaScript是通过事件循环机制来解决这个弊端的，事件循环机制的执行规则。
+
+1.所有代码作为宏任务进入主线程执行栈，开始执行。
+
+2.执行过程中，同步代码会立即执行，宏任务进入宏任务队列，微任务进入到微任务队列。
+
+3.当前宏任务执行完出队，读取微任务队列，有则执行，直到全部执行完毕。
+
+4.执行浏览器ui进程渲染。
+
+5.检查是否有webwork任务，有则执行。
+
+6.本轮宏任务执行完成，回到第二步，继续执行，直到宏任务与微任务队列全部清空。
+
+![image-20220730222153730](C:\Users\14211\AppData\Roaming\Typora\typora-user-images\image-20220730222153730.png)
+
+https://www.ruanyifeng.com/blog/2014/10/event-loop.html
 
 # 继承
 
@@ -541,11 +695,7 @@ console.log(instance.age); // 29
 
 
 
-new调用构造函数的过程：
-1，创建新的临时对象a
-2，把a的原型属性(<u>__</u>proto<u>__</u>)指向该构造函数原型属性(prototype)
-3，把this绑定到a上
-4，如果构造函数没返回其他对象，则返回a
+
 
 ## 组合继承
 
@@ -674,6 +824,16 @@ SubType.prototype.sayAge = function() {
 ES6 类支持单继承。使用 extends 关键字，就可以继承任何拥有[[Construct]]和原型的对象。 很大程度上，这意味着不仅可以继承一个类，也可以继承普通的构造函数（保持向后兼容）
 
 派生类都会通过原型链访问到类和原型上定义的方法。this 的值会反映调用相应方法的实例或者类
+
+# New做了什么
+
+创建 2绑 返回
+
+new调用构造函数的过程：
+1，创建新的临时对象a
+2，把a的原型属性(<u>__</u>proto<u>__</u>)指向该构造函数原型属性(prototype)
+3，把this绑定到a上
+4，如果构造函数没返回其他对象，则返回a
 
 # 类
 
@@ -969,3 +1129,22 @@ const betterFn = throttle(() => console.log('fn 函数执行了'), 1000)
 // 每 10 毫秒执行一次 betterFn 函数，但是只有时间差大于 1000 时才会执行 fn
 setInterval(betterFn, 10)
 ```
+
+# Cookie/storage
+
+为了满足各种各样的需求，会经常性在本地存储大量的数据，传统方式我们以document.cookie来进行存储的，但是由于其存储大小只有4k左右，并且解析也相当的复杂，每一次发送请求都会携带上cookie，会造成带宽的浪费，给开发带来诸多不便，HTML5规范则提出解决方案。
+
+| 项           | cookie                                                       | localStorage                                                 | sessionStorage                                               |
+| ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 存储大小     | 4K                                                           | 5M                                                           | 5M                                                           |
+| 生命周期     | 若不设置有效期，则临时存放在内存中，会话结束后自动删除。若设置了有效期，则存储在硬盘里，有效期到了，自动删除。 | 永久有效。窗口或浏览器关闭也一直保存。只有手动删除才去除。   | 当前网页会话下有效，关闭页面或浏览器后会被清除。             |
+| 生成方式     | 服务器生成。可设置失效时间。服务器通过响应头“Set-Cookie”传给前端。 | 前端生成。                                                   | 前端生成。                                                   |
+| 与服务器通信 | 每次请求都会携带在HTTP头中。（名为：“Cookie”）               | 不发给客户端。纯粹为了保存数据                               | 不发给客户端。纯粹为了保存数据                               |
+| 数据共享     | 相同浏览器不同页面可共享（同源页面）                         | 相同浏览器不同页面可共享（同源页面）                         | 相同浏览器同一个页面可以共享，不同页面不可共享（同源页面）   |
+| 易用性       | 易用性差。原生的cookie接口不够友好，需要自己封装setCookie, getCookie | 原生接口很好用。<br/><br/>localStorage.setItem(key, value) //存<br/>localStorage.getItem(key)  //读<br/>localStorage.removeItem(key)  //删<br/>localStorage.clear()  //删除所有 | 原生接口很好用。<br/><br/>sessionStorage.setItem(key, value)  //存<br/>sessionStorage.getItem(key)  //读<br/>sessionStorage.removeItem(key)  //删<br/>sessionStorage.clear()  //删除所有 |
+
+https://www.cnblogs.com/fundebug/p/about-browser-storage.html
+
+# requestAnimationFrame
+
+https://javascript.ruanyifeng.com/htmlapi/requestanimationframe.html#
