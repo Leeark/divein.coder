@@ -1061,6 +1061,10 @@ function deepClone(target) {
 
 缺点：循环引用报错。
 
+# 闭包 
+
+闭包Closure是1964年提出的一个计算机编程的概念，按照当时的论文《表达式的机器执行》中的定义，它包含控制和环境两个部分，在JavaScript中，以函数能够访问定义时的环境中变量的方式得以实现。
+
 # 模块化
 
 我们现在有了运行大量 JavaScript 脚本的复杂程序，还有一些被用在其他环境（例如 [Node.js](https://developer.mozilla.org/en-US/docs/Glossary/Node.js)）。因此，近年来，有必要开始考虑提供一种将 JavaScript 程序拆分为可按需导入的单独模块的机制。

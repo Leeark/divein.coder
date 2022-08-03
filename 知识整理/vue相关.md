@@ -1,3 +1,31 @@
+# Vue双向数据绑定原理
+
+https://juejin.cn/post/6932659815424458760
+
+Vue实现双向数据绑定是采用数据劫持和发布者-订阅者模式。
+
+数据劫持是利用ES5的Object.defineProperty(obj,key,val)方法来劫持每个属性的getter和setter，在数据变动是发布消息给订阅者，从而触发相应的回调来更新视图。
+
+# DATA为什么是函数
+
+# computed、watch、method
+
+# Vue的单向数据流
+
+# Vue检测数组或对象的变化
+
+# Key的作用
+
+# nextTick原理
+
+# Vuex
+
+# vue-router的两种模式
+
+# vue-router有哪几种导航钩子
+
+
+
 # 1. Vue中的组件通信
 
 ## 1.1 父=====>子
@@ -167,6 +195,12 @@ step 4，最好在beforeDestroy钩子中解绑事件`this.$bus.$off("Mes")`。
 - ViewModel：视图模型层，用来连接Model和View，是Model和View之间的通信桥梁
 
 Vue 框架其实就是起到 MVVM 模式中的 ViewModel 层的作用。
+
+# v-model原理
+
+`v-model` 本质上不过是语法糖。它负责监听用户的输入事件以更新数据，并对一些极端场景进行一些特殊处理。
+
+本质：1,v-bind;(双绑)2,,监听事件传值
 
 # Vue.use()是干嘛的
 
