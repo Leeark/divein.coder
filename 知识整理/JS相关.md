@@ -169,13 +169,13 @@ Object.defineProperty(obj, prop, descriptor)
 
 ### 数据描述
 
- [[Configurable]]：表示属性是否可以通过 delete 删除并重新定义，是否可以修改它的特 性，以及是否可以把它改为访问器属性。默认情况下，所有直接定义在对象上的属性的这个特 性都是 true，如前面的例子所示。
+ [[Configurable]]：表示属性是否可以通过 delete 删除并重新定义，是否可以修改它的特 性，以及是否可以把它改为访问器属性。默认情况下，所有直接定义在对象上的属性的这个特 性都是 true，如前面的例子所示。默认是 false。
 
 虽然可以对同一个属性多次调用 Object.defineProperty()，但在把 configurable 设 置为 false 之后就会受限制了。
 
 把 configurable 设置为 false，意味着这个属性不能从对象上删除。非严格模式下对 这个属性调用 delete 没有效果，严格模式下会抛出错误。此外，一个属性被定义为不可配置之后，就 不能再变回可配置的了。再次调用 Object.defineProperty()并修改任何非 writable 属性会导致 错误（修改writable为true也会报错）
 
-  [[Enumerable]]：表示属性是否可以通过 for-in 循环返回。默认情况下，所有直接定义在对 象上的属性的这个特性都是 true，如前面的例子所示。 
+  [[Enumerable]]：表示属性是否可以通过 for-in 循环返回。默认情况下，所有直接定义在对 象上的属性的这个特性都是 true，如前面的例子所示。 默认是 false。
 
  [[Writable]]：表示属性的值是否可以被修改。默认情况下，所有直接定义在对象上的属性的 这个特性都是 true，如前面的例子所示。
 
@@ -339,11 +339,86 @@ Object.getOwnPropertyNames(obj)
 Object.getOwnPropertySymbols(obj)
 ```
 
+
+
+# 遍历
+
+## for...in
+
+以任意顺序迭代一个对象的除[Symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)以外的[可枚举](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Enumerability_and_ownership_of_properties)属性，包括继承的可枚举属性。
+
+关键点：遍历属性名，除了symbol，需可枚举，包含继承。
+
+## Object.keys
+
+遍历对象所有可枚举属性 不包括原型链上的属性。
+
+## Object.getOwnPropertyNames()
+
+**`Object.getOwnPropertyNames()`**方法返回一个由指定对象的所有自身属性的属性名（包括不可枚举属性但不包括 Symbol 值作为名称的属性）组成的数组。
+
+## Object.getOwnPropertySymbols()
+
+`**Object.getOwnPropertySymbols()**` 方法返回一个给定对象自身的所有 Symbol 属性的数组。
+
+|                                | 可枚举/不可枚举 | 有无继承属性 | 有无symbol属性 | 返回值       |
+| ------------------------------ | --------------- | ------------ | -------------- | ------------ |
+| for...in（迭代器）             | 仅可枚举属性    | 有           | 无             | ——           |
+| Object.keys                    | 仅可枚举属性    | 无           | 无             | 属性名数组   |
+| Object.getOwnPropertyNames()   | 都有            | 无           | 无             | 属性名数组   |
+| Object.getOwnPropertySymbols() | ————            | ————         | 有             | 符号属性数组 |
+
+## for...of
+
+[可迭代对象](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols)（包括 [`Array`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array)，[`Map`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Map)，[`Set`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Set)，[`String`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String)，[`TypedArray`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/TypedArray)，[arguments](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/arguments) 对象等等）上创建一个迭代循环，调用自定义迭代钩子，并为每个不同属性的值执行语句。
+
+关键词：可迭代对象，遍历属性值
+
+Symbol类型是不可枚举的。Object.keys方法返回对象上的所有可枚举的键属性。Symbol类型是不可见的，并返回一个空数组。 记录整个对象时，所有属性都是可见的，甚至是不可枚举的属性。
+这是Symbol的众多特性之一：除了表示完全唯一的值（防止对象意外名称冲突，例如当使用2个想要向同一对象添加属性的库时），您还可以隐藏这种方式对象的属性（尽管不完全。你仍然可以使用Object.getOwnPropertySymbols()方法访问 Symbol。
+
+Symbol定义的属性不会出现在下面循环中：
+
+for in:可获取原型属性，不可获取不可枚举属性
+for of:不可遍历对象，可遍历数组
+Object.keys：原型属性和不可枚举属性都不能获取
+Object.getOwnPropertyByNames：不可获取原型属性，可获取不可枚举属性
+JSON.stringify：原型属性和不可枚举属性都不能获取
+Reflect.ownKeys：可获取不可枚举和Symbol，不可获取原型
+————————————————
+
+获取原型上属性的有：for in；
+获取不可枚举属性的有：getOwnPropertyNames，Reflect.ownKeys
+可获取Symbol属性的有：getOwnpropertySymbols,Reflect.ownKeys
+
+## why  for...in ?
+
+`for ... in`为遍历对象属性而构建，不建议与数组一起使用，数组可以用`Array.prototype.forEach()`和`for ... of`，那么`for ... in`的到底有什么用呢？
+
+它最常用的地方应该是用于**调试，可以更方便的去检查对象属性**（通过输出到控制台或其他方式）。尽管对于处理存储数据，数组更实用些，但是你在处理有`key-value`数据（比如属性用作“键”），需要检查其中的任何键是否为某值的情况时，还是推荐用`for ... in`。
+
+示例：
+
+```js
+var obj = {a:1, b:2, c:3};
+
+for (var prop in obj) {
+  console.log("obj." + prop + " = " + obj[prop]);
+}
+
+// Output:
+// "obj.a = 1"
+// "obj.b = 2"
+// "obj.c = 3"
+```
+
+
+
 # 原型和in操作符
 
 有两种方式使用 in 操作符：单独使用和在 for-in 循环中使用。
 
-在单独使用时，in 操作符会在可 以通过对象访问指定属性时返回 true，无论该属性是在实例上还是在原型上。
+在单独使用时，in 操作符会在可以通过对象访问指定属性时返回 true，**无论该属性是在实例上还是在原型上。**
 
 在上面整个例子中，name 随时可以通过实例或通过原型访问到（可枚举）。
 
@@ -358,13 +433,9 @@ function hasPrototypeProperty(object, name)
 
 只要通过对象可以访问，in 操作符就返回 true，而 hasOwnProperty()只有属性存在于实例上 时才返回 true。因此，只要 in 操作符返回 true 且 hasOwnProperty()返回 false，就说明该属性 是一个原型属性。相当于`hasPrototypeProperty(person, "name")`
 
-在 for-in 循环中使用 in 操作符时，可以通过对象访问且可以被枚举的属性（键名）都会返回，包括实例属性和原型属性。
+**要获得对象上所有可枚举的实例属性，可以使用 Object.keys()方法。**这个方法接收一个对象作 为参数，返回包含该对象所有**可枚举属性**名称的字符串数组。
 
-遮蔽原型中不可枚举（[[Enumerable]]特性被设置为 false）属性的实例属性也会 在 for-in 循环中返回，因为默认情况下开发者定义的属性都是可枚举的。 
-
-要获得对象上所有可枚举的实例属性，可以使用 Object.keys()方法。这个方法接收一个对象作 为参数，返回包含该对象所有可枚举属性名称的字符串数组。
-
-如果想列出所有实例属性，无论是否可以枚举，都可以使用 Object.getOwnPropertyNames()
+如果想列出所有实例属性，无论是否可以枚举，都可以使用 **Object.getOwnPropertyNames()**
 
 在 ECMAScript 6 新增符号类型之后，相应地出现了增加一个 Object.getOwnPropertyNames() 的兄弟方法的需求，因为以符号为键的属性没有名称的概念。因此，Object.getOwnPropertySymbols()方法就出现了，这个方法与 Object.getOwnPropertyNames()类似，只是针对符号而已
 
