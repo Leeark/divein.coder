@@ -1000,7 +1000,27 @@ Promise 是异步编程的一种解决方案，解决了回调地狱的问题。
 
 `reject`函数的作用是，将`Promise`对象的状态从“未完成”变为“失败”（即从 pending 变为 rejected），在异步操作失败时调用，并将异步操作报出的错误，作为参数传递出去。
 
+promise对象有两个特点：
+
+1，对象有三种状态：pending，fulfilled，rejected。只有异步操作的结果可以决定当前是那种状态。
+
+2，一旦状态改变就不可再变，会保持这个结果，统称为resolved。状态改变的两种可能：pending→fulfilled；pending→rejected。
+
+ES6入门：为了行文方便`resolved`统一只指`fulfilled`状态，不包含`rejected`状态。
+
 `Promise`实例生成以后，可以用`then`方法分别指定`resolved`状态和`rejected`状态的回调函数。
+
+`then`方法可以接受两个回调函数作为参数。第一个回调函数是`Promise`对象的状态变为`resolved`时调用，第二个回调函数是`Promise`对象的状态变为`rejected`时调用。
+
+这两个函数都是可选的，不一定要提供。它们都接受`Promise`对象传出的值作为参数。
+
+promise缺点：
+
+一旦创建无法中途取消；
+
+不设置回调函数，内部抛出的错误不会反映到外部；
+
+pending状态无法得知目前的进展。
 
 # Generator
 
@@ -1221,5 +1241,11 @@ setInterval(betterFn, 10)
 https://www.cnblogs.com/fundebug/p/about-browser-storage.html
 
 # requestAnimationFrame
+
+### 函数`requestAnimationFrame()`
+
+前面讲解threejs动画效果，使用了`setInterval()`函数，实际开发中，为了更好的利用浏览器渲染，可以使用函数`requestAnimationFrame()`代替`setInterval()`函数，`requestAnimationFrame()`和`setInterval()`一样都是浏览器`window`对象的方法。
+
+`requestAnimationFrame()`参数是将要被调用函数的函数名，`requestAnimationFrame()`调用一个函数不是立即调用而是向浏览器发起一个执行某函数的请求， 什么时候会执行由浏览器决定，一般默认保持60FPS的频率，大约每16.7ms调用一次`requestAnimationFrame()`方法指定的函数，60FPS是理想的情况下，如果渲染的场景比较复杂或者说硬件性能有限可能会低于这个频率。可以查看文章[《requestAnimationFrame()》](http://www.yanhuangxueyuan.com/HTML5/time.html)了解更多`requestAnimationFrame()`函数的知识。
 
 https://javascript.ruanyifeng.com/htmlapi/requestanimationframe.html#
