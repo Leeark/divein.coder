@@ -8,11 +8,11 @@
 
 4.Canvas 图形
 
-5.地理定位
+5.SVG绘图
 
-6.拖放API
+6.地理定位
 
-7.SVG绘图
+7.拖放API
 
 8.Web Worker
 
